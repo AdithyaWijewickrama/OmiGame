@@ -3,10 +3,11 @@ import threading
 import time
 from tkinter import *
 
+from backend.complayer.Player import PlayerData
 from scripts import Helper
 from backend.CardPack import width as cwidth, height as cheight
 from scripts.Helper import image
-from backend.NewGame import *
+from backend.complayer.NewGame import *
 from frontend.views import OmmyMessage
 from frontend.views.OmmyMessage import StatLabel, StatPanel, AskTrump
 from frontend.ui.UiConfg import COLOR, FONT2
@@ -260,7 +261,7 @@ class PlayDesk:
     def passround_4(self, player):
         newGame.rounds_4 += 1
         newGame.tot_rounds_4 += 1
-        newGame.turn = newGame.getNextRelPlayer(player)
+        newGame.turn = newGame.getNextPlayerRelativeTo(player)
         if newGame.rounds_4 == 4:
             newGame.rounds_4 = 0
             winner = newGame.currentHand.whogot()
@@ -276,7 +277,7 @@ class PlayDesk:
             self.table.after(400, self.passround_8)
             return
         elif not player == 2:
-            p = newGame.getNextRelPlayer(player)
+            p = newGame.getNextPlayerRelativeTo(player)
             card = newGame.players()[p].getnext(newGame.currentHand)
             self.addcard(card, p)
 
@@ -299,7 +300,7 @@ class PlayDesk:
                 win = OmmyMessage.YouWin(self.w, newGame.playerYou.score,
                                          (self.team2.score_10 / newGame.mainrounds) * 100)
                 win.dlg.show()
-            newGame.trumpPly = newGame.getNextRelPlayer(newGame.trumpPly)
+            newGame.trumpPly = newGame.getNextPlayerRelativeTo(newGame.trumpPly)
             self.team1.score_8 = 0
             self.team2.score_8 = 0
             newGame.mainrounds += 1

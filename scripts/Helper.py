@@ -40,7 +40,7 @@ def abspath(file):
 
 
 def putcard(i=1):
-    from backend.NewGame import PlayerData
+    from backend.complayer.Player import PlayerData
     if int(PlayerData().getvalue('sound')) == 1:
         for k in range(i):
             try:
@@ -53,7 +53,7 @@ def putcard(i=1):
 
 
 def sufflecards():
-    from backend.NewGame import PlayerData
+    from backend.complayer.Player import PlayerData
     if int(PlayerData().getvalue('sound')) == 1:
         print("Playing sound: Suffle cards")
         # playsound(SOUNDPATH + r'shuffling-cards-1.wav')
@@ -62,7 +62,7 @@ def sufflecards():
 
 
 def givecards():
-    from backend.NewGame import PlayerData
+    from backend.complayer.Player import PlayerData
     if int(PlayerData().getvalue('sound')) == 1:
         print("Playing sound: Giving cards")
         # playsound(SOUNDPATH + r'shuffling-cards-6.wav')
@@ -92,8 +92,8 @@ def lcm(vals):
     return r if (r1 % r) % 1 == 0 else r - (r1 % r)
 
 
-IMAGEPATH = abspath('../frontend/static/images/')
-SOUNDPATH = abspath('../frontend/static/sounds/')
+IMAGEPATH = abspath('frontend/static/images/')
+SOUNDPATH = abspath('frontend/static/sounds/')
 
 if __name__ == '__main__':
     print(lcm([200, 40000]))

@@ -1,7 +1,9 @@
 import random
 from tkinter import *
 
-from backend import NewGame, Player, CardPack
+import backend.complayer.Player
+from backend import CardPack
+from backend.complayer import Player
 from backend.CardPack import *
 from scripts.Helper import image
 
@@ -10,10 +12,10 @@ from scripts.Helper import image
 hand = {}
 status = ''
 trumpPly = 3
-pl1 = NewGame.Player('Player 1')
-pl2 = NewGame.Player('Player 2')
-pl3 = NewGame.Player('Player 3')
-realPlayer = NewGame.Player('Real Player')
+pl1 = backend.complayer.Player.Player('Player 1')
+pl2 = backend.complayer.Player.Player('Player 2')
+pl3 = backend.complayer.Player.Player('Player 3')
+realPlayer = backend.complayer.Player.Player('Real Player')
 pl1.setopponent(pl2)
 pl2.setopponent(pl1)
 pl3.setopponent(realPlayer)

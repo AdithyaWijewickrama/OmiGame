@@ -3,9 +3,10 @@ from functools import reduce
 from tkinter import *
 from tkinter import Label, Frame, CENTER, Button, messagebox as mbox, messagebox
 
+from backend.complayer.Player import PlayerData
 from scripts import Helper
 from scripts.Helper import image
-from backend.NewGame import *
+from backend.complayer.NewGame import *
 from frontend.ui.UiConfg import FONT, COLOR
 
 cwidth = CardPack.width

@@ -1,14 +1,14 @@
 import multiprocessing
 from tkinter import *
 
-from backend import NewGame
+import backend.complayer.Player
 from scripts.Helper import image
 from frontend.views import OmmyMessage
 from frontend.views.OmmyMessage import MyMessage
 from frontend.ui import UiConfg
 from frontend.ui.UiConfg import FONT, COLOR, COLOR2
 
-playerdata = NewGame.PlayerData()
+playerdata = backend.complayer.Player.PlayerData()
 width = 770
 height = 520
 geo = str(width) + 'x' + str(height)

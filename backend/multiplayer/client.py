@@ -20,4 +20,4 @@ def send(msg):
     client.send(send_len)
     client.send(massage)
 
-send('hello fucker')
+send('hello')

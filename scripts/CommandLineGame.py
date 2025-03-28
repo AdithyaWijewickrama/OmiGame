@@ -1,6 +1,7 @@
 import random
 
-from backend import CardPack, Player
+from backend import CardPack
+from backend.complayer import Player
 from backend.CardPack import Card
 
 status = ''
