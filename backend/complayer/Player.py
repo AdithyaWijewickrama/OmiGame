@@ -218,15 +218,15 @@ class PlayerData:
     def __init__(self):
         pass
 
-    def getvalue(self, key):
-        return Database.getInstance().getSingleObject(f"select value from player_data where id=?", (key,))
+    def getValue(self, key):
+        return Database().getSingleObject(f"select value from player_data where id=?", (key,))
 
     def update(self, key, val):
         if key is None:
             return
-        return Database.getInstance().execute(f"update player_data set value=? where id=?", (val, key))
+        return Database().execute(f"update player_data set value=? where id=?", (val, key))
 
     def addnew(self, key, val):
         if key is None:
             return
-        Database.getInstance().execute(f"insert into player_data (?,?)", (val, key))
+        Database().execute(f"insert into player_data (?,?)", (val, key))

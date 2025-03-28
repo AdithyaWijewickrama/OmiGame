@@ -9,6 +9,8 @@ class Database:
     __DB_OBJECT = None
 
     def __init__(self):
+        if self.__DB_OBJECT is not None:
+            self.__DB_OBJECT.close()
         self.conn = sql.connect(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'db.sqlite'))
         self.cursor = self.conn.cursor()
 
@@ -25,6 +27,9 @@ class Database:
         print("Params:",params,type(params))
         self.cursor.execute(sqlQuery, params)
         return self.cursor.fetchone()
+
+    def closeConnection(self):
+        self.conn.close()
 
     @staticmethod
     def getInstance():

@@ -13,10 +13,10 @@ cwidth = CardPack.width
 cheight = CardPack.height
 trump_imagew = 100
 trump_imageh = 100
-hearts = 'images/icons/hearts.png'
-clubs = 'images/icons/clubs.png'
-spades = 'images/icons/spades.png'
-diamonds = 'images/icons/diamonds.png'
+hearts = 'icons/hearts.png'
+clubs = 'icons/clubs.png'
+spades = 'icons/spades.png'
+diamonds = 'icons/diamonds.png'
 
 
 class MyMenu:
@@ -364,7 +364,7 @@ class Hints:
         self.dlg.setcomponents([[self.b1], [self.b2], [self.cancel]])
 
     def leftcards(self):
-        coins = PlayerData().getvalue('coins')
+        coins = PlayerData().getValue('coins')
         if coins >= 150:
             global cards
             self.cards1 = []
@@ -384,7 +384,7 @@ class Hints:
             messagebox.showerror('Error', 'You have no enough coins')
 
     def nextcard(self):
-        coins = PlayerData().getvalue('coins')
+        coins = PlayerData().getValue('coins')
         print(coins)
         if coins >= 150:
             self.card = self.player.getnext(self.hand)
@@ -411,13 +411,13 @@ class YouWin:
         f1 = 50
         f2 = 14
         img_r = 30
-        self.img = image('images/icons/coin.png', img_r, img_r)
-        self.img1 = image('images/icons/xp.png', img_r, img_r)
+        self.img = image('icons/coin.png', img_r, img_r)
+        self.img1 = image('icons/xp.png', img_r, img_r)
         self.winlabel = Label(self.dlg.win, text="YOU WIN", font=('Arial', f1, 'bold'), bg=COLOR, fg='white')
-        self.coins = StatLabel(self.dlg.win, float='-', value=self.player_data.getvalue('coins'), type='Coins gained',
+        self.coins = StatLabel(self.dlg.win, float='-', value=self.player_data.getValue('coins'), type='Coins gained',
                                image=self.img, typefont=('Arial', f2, 'bold'),
                                valuefont=('Arial', f2, 'bold'), bg=COLOR, fg='white')
-        self.xp = StatLabel(self.dlg.win, float='-', value=self.player_data.getvalue('xp'), type='XP gained',
+        self.xp = StatLabel(self.dlg.win, float='-', value=self.player_data.getValue('xp'), type='XP gained',
                             image=self.img1, typefont=('Arial', f2, 'bold'),
                             valuefont=('Arial', f2, 'bold'), bg=COLOR, fg='white')
         self.menu = Button(self.dlg.win, text='Main menu', bg='white', fg=COLOR, font=('Arial', f2, 'bold'),
@@ -431,8 +431,8 @@ class YouWin:
         self.dlg.win.rowconfigure(2, weight=1)
         self.dlg.win.rowconfigure(3, weight=1)
         self.bar.bar.grid(column=0, row=0, columnspan=self.dlg.win.grid_size()[0], sticky='wen')
-        self.player_data.update('coins', int(self.player_data.getvalue('coins')) + coins)
-        self.player_data.update('xp', int(self.player_data.getvalue('xp')) + xp)
+        self.player_data.update('coins', int(self.player_data.getValue('coins')) + coins)
+        self.player_data.update('xp', int(self.player_data.getValue('xp')) + xp)
         self.dlg.win.after(1000, self.incxp)
         self.dlg.win.after(1000, self.inccoins)
 
@@ -473,13 +473,13 @@ class YouLose:
         f1 = 50
         f2 = 14
         img_r = 30
-        self.img = image('images/icons/coin.png', img_r, img_r)
-        self.img1 = image('images/icons/xp.png', img_r, img_r)
+        self.img = image('icons/coin.png', img_r, img_r)
+        self.img1 = image('icons/xp.png', img_r, img_r)
         self.winlabel = Label(self.dlg.win, text="YOU LOSE", font=('Arial', f1, 'bold'), bg=COLOR, fg='white')
-        self.coins = StatLabel(self.dlg.win, float='-', value=self.player_data.getvalue('coins'), type='Coins lost',
+        self.coins = StatLabel(self.dlg.win, float='-', value=self.player_data.getValue('coins'), type='Coins lost',
                                image=self.img, typefont=('Arial', f2, 'bold'),
                                valuefont=('Arial', f2, 'bold'), bg=COLOR, fg='white')
-        self.xp = StatLabel(self.dlg.win, float='-', value=self.player_data.getvalue('xp'), type='XP lost',
+        self.xp = StatLabel(self.dlg.win, float='-', value=self.player_data.getValue('xp'), type='XP lost',
                             image=self.img1, typefont=('Arial', f2, 'bold'),
                             valuefont=('Arial', f2, 'bold'), bg=COLOR, fg='white')
         self.menu = Button(self.dlg.win, text='Main menu', bg='white', fg=COLOR, font=('Arial', f2, 'bold'),
@@ -493,8 +493,8 @@ class YouLose:
         self.dlg.win.rowconfigure(2, weight=1)
         self.dlg.win.rowconfigure(3, weight=1)
         self.bar.bar.grid(column=0, row=0, columnspan=self.dlg.win.grid_size()[0], sticky='wen')
-        self.player_data.update('coins', int(self.player_data.getvalue('coins')) + coins)
-        self.player_data.update('xp', int(self.player_data.getvalue('xp')) + xp)
+        self.player_data.update('coins', int(self.player_data.getValue('coins')) + coins)
+        self.player_data.update('xp', int(self.player_data.getValue('xp')) + xp)
         self.dlg.win.after(1000, self.decxp)
         self.dlg.win.after(1000, self.deccoins)
 

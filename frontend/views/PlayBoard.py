@@ -39,9 +39,9 @@ class PlayDesk:
         tw = (cwidth * 4) + 40
         th = height - cheight - 20
         global imgcoin, imgxp
-        imgcoin = image("images/icons/coin.png", 30, 30)
-        imgxp = image("images/icons/xp.png", 30, 30)
-        imghints = image("images/icons/hints.png", 30, 30)
+        imgcoin = image("icons/coin.png", 30, 30)
+        imgxp = image("icons/xp.png", 30, 30)
+        imghints = image("icons/hints.png", 30, 30)
         self.w.update()
         self.collapseepanel = Frame(self.w)
         self.top = Frame(self.collapseepanel)
@@ -53,10 +53,10 @@ class PlayDesk:
         self.topbar = LabelFrame(self.sidebar, bg=COLOR)
 
         self.coins = StatLabel(self.topbar, image=imgcoin, bg=COLOR, fg='white',
-                               value=(playerdata.getvalue('coins')), valuefont=FONT2)
-        self.xp = StatLabel(self.topbar, image=imgxp, bg=COLOR, fg='white', value=(playerdata.getvalue('xp')),
+                               value=(playerdata.getValue('coins')), valuefont=FONT2)
+        self.xp = StatLabel(self.topbar, image=imgxp, bg=COLOR, fg='white', value=(playerdata.getValue('xp')),
                             valuefont=FONT2)
-        self.hint=Button(self.topbar,command=self.hints,bg=COLOR,text="hint")
+        self.hint=Button(self.topbar,command=self.hints,bg=COLOR, fg='white',text="Hint")
         self.topbar.columnconfigure(0,weight=1)
         self.hint.grid(column=0, row=0, sticky='we')
         self.coins.grid(column=0, row=1, sticky='we')
@@ -67,7 +67,7 @@ class PlayDesk:
         self.label3 = Label(self.sidebar, text="Team stats", font=FONT2, anchor='w', fg=COLOR)
         self.label3.grid(column=0, row=row, padx=5, pady=2, sticky='we')
         row += 1
-        self.label3 = Label(self.sidebar, text="Team 01", font=FONT2, anchor='w', fg=COLOR)
+        self.label3 = Label(self.sidebar, text="Opponents team", font=FONT2, anchor='w', fg=COLOR)
         self.label3.grid(column=0, row=row, padx=5, pady=2, sticky='we')
         row += 1
         self.wonlabel = StatLabel(self.sidebar, type='Won cards', value='0', float='|', valuefont=('Arial', 26, 'bold'))
@@ -76,7 +76,7 @@ class PlayDesk:
         self.winproblabel = StatLabel(self.sidebar, type='Win probability', value='0%')
         self.winproblabel.grid(column=0, row=row, padx=5, pady=2, sticky='we')
         row += 1
-        self.label3 = Label(self.sidebar, text="Team 02", font=FONT2, anchor='w', fg=COLOR)
+        self.label3 = Label(self.sidebar, text="Your team", font=FONT2, anchor='w', fg=COLOR)
         self.label3.grid(column=0, row=row, padx=5, pady=2, sticky='we')
         row += 1
         self.wonlabel1 = StatLabel(self.sidebar, type='Won cards', value='0', float='|',
@@ -141,7 +141,7 @@ class PlayDesk:
 
     def start(self):
         newGame.suffle()
-        threading.Thread(target=Helper.sufflecards())
+        threading.Thread(target=Helper.suffleCards())
         trumpcards = newGame.setTrump()
         if not trumpcards:
             OmmyMessage.ShowTrump(self.w, newGame.trump,
@@ -191,11 +191,11 @@ class PlayDesk:
         self.drawlabel.setval(newGame.drawrounds)
         if self.team1.score_10 > 0:
             self.winproblabel.setval(
-                '{:.1f}%'.format(self.team1.wontimes / (newGame.tot_rounds_4) * 100))
+                '{:.1f}%'.format(self.team1.timesWon / (newGame.tot_rounds_4) * 100))
 
         if self.team2.score_10 > 0:
             self.winproblabel1.setval(
-                '{:.1f}%'.format(self.team2.wontimes / (newGame.mainrounds - newGame.drawrounds) * 100))
+                '{:.1f}%'.format(self.team2.timesWon / (newGame.mainrounds - newGame.drawrounds) * 100))
 
     def addhand(self, hand):
         for child in self.myhand.winfo_children():
@@ -208,7 +208,7 @@ class PlayDesk:
                 card = CardPack.Card(main, c)
                 cardsimgs[card] = card.getImage()
         i = 0
-        threading.Thread(target=Helper.givecards()).start()
+        threading.Thread(target=Helper.giveCards()).start()
         for c1, im in cardsimgs.items():
             b1 = Button(self.myhand, image=im, bg='white', activebackground='white', activeforeground='white', bd=0)
             b1['command'] = lambda b=b1, c=c1: self.addcard_if(c, b)
@@ -272,7 +272,7 @@ class PlayDesk:
             else:
                 self.team2.score_8 += 1
             newGame.players()[winner].score += 1
-            threading.Thread(target=Helper.givecards).start()
+            threading.Thread(target=Helper.giveCards).start()
             self.givehandtowinner(winner)
             self.table.after(400, self.passround_8)
             return
@@ -286,12 +286,12 @@ class PlayDesk:
         if newGame.rounds_8 == 8:
             if self.team1.score_8 >= 5:
                 self.team1.score_10 += 3 if self.team1.score_8 == 8 else 2 if newGame.trumpPly not in [0, 2] else 1
-                self.team1.wontimes += 1
+                self.team1.timesWon += 1
             elif self.team1.score_8 == self.team2.score_8:
                 newGame.drawrounds += 1
             else:
                 self.team2.score_10 += 3 if self.team2.score_8 == 8 else 2 if newGame.trumpPly not in [1, 3] else 1
-                self.team2.wontimes += 1
+                self.team2.timesWon += 1
             if self.team1.score_10 >= 10:
                 win = OmmyMessage.YouLose(self.w, newGame.playerYou.score,
                                           (self.team2.score_10 / newGame.mainrounds) * 100)

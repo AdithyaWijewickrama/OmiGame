@@ -2,10 +2,11 @@ import time
 from functools import reduce
 from pathlib import Path
 from PIL import ImageTk, Image
+from playsound import playsound
 
 
 def image(file, w=0, h=0, a=0):
-    img = Image.open(abspath('frontend/static/'+file))
+    img = Image.open(abspath('frontend/static/images/'+file))
     if not (w == 0 or h == 0):
         img = img.resize((w, h), Image.Resampling.LANCZOS)
     return ImageTk.PhotoImage(img.rotate(a))
@@ -36,36 +37,35 @@ def center_relative(win, parent):
 
 
 def abspath(file):
-    return str((Path().parent / file).resolve())
+    return str((Path.cwd() / file).resolve())
 
 
 def putcard(i=1):
     from backend.complayer.Player import PlayerData
-    if int(PlayerData().getvalue('sound')) == 1:
+    if int(PlayerData().getValue('sound')) == 1:
         for k in range(i):
             try:
                 print("Playing sound: Putting cards")
-                # playsound(sound=SOUNDPATH + 'put_card.mp3')
+                playsound(SOUNDPATH+'/putcard.mp3')
             except Exception as e:
                 print('[PLAYSONG EXP]', e)
     else:
         time.sleep(1)
 
 
-def sufflecards():
+def suffleCards():
     from backend.complayer.Player import PlayerData
-    if int(PlayerData().getvalue('sound')) == 1:
-        print("Playing sound: Suffle cards")
-        # playsound(SOUNDPATH + r'shuffling-cards-1.wav')
+    if int(PlayerData().getValue('sound')) == 1:
+        playsound(SOUNDPATH+'/shuffling-cards-1.wav')
     else:
         time.sleep(1)
 
 
-def givecards():
+def giveCards():
     from backend.complayer.Player import PlayerData
-    if int(PlayerData().getvalue('sound')) == 1:
+    if int(PlayerData().getValue('sound')) == 1:
         print("Playing sound: Giving cards")
-        # playsound(SOUNDPATH + r'shuffling-cards-6.wav')
+        playsound(SOUNDPATH+'/shuffling-cards-6.wav')
     else:
         time.sleep(1)
 
@@ -93,7 +93,5 @@ def lcm(vals):
 
 
 IMAGEPATH = abspath('frontend/static/images/')
+print(IMAGEPATH)
 SOUNDPATH = abspath('frontend/static/sounds/')
-
-if __name__ == '__main__':
-    print(lcm([200, 40000]))

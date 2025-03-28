@@ -7,7 +7,7 @@ from backend.complayer.Player import Player
 class Score:
     def __init__(self):
         self.score_8, self.score_10, self.tot_score_8 = (0, 0, 0)
-        self.wontimes = 0
+        self.timesWon = 0
 
 
 class Team:

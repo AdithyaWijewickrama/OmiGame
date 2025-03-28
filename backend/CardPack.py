@@ -130,15 +130,15 @@ def getBiggerThan(cardList, card):
 
 class Card():
     def __init__(self, main, card, short=False):
-        self.card = {'m': getMainCardNameByLetter(main) if short else main, 'c': getCardNameByLetter(card) if short else card}
+        self.card = {'m': getMainCardNameByLetter(main) if short else main,
+                     'c': getCardNameByLetter(card) if short else card}
         if (self.m() not in mainCards) or (self.c() not in cards):
             print(f'Card not valid {self.__str__()}')
 
     def getImage(self):
         try:
             filename = str((self.card['c']) + '_of_' + (self.card['m']) + '.png')
-            return image(os.path.join('images', 'cards', filename), width,
-                         height)
+            return image(os.path.join('cards', filename), width, height)
         except Exception as e:
             print(f"new image -> {self.__str__()}")
 
@@ -170,7 +170,7 @@ class Hand:
     def __init__(self, trump, main=''):
         self.trump = trump
         self.main = main
-        self.len = 0 if main=='' else 1
+        self.len = 0 if main == '' else 1
         self.__player1 = {'m': '', 'c': ''}
         self.__player2 = {'m': '', 'c': ''}
         self.__opponent = {'m': '', 'c': ''}
@@ -210,7 +210,7 @@ class Hand:
         pack = {}
         for p in self.getHand():
             if p['m'] != '':
-                pack[p['m']]=[]
+                pack[p['m']] = []
                 pack[p['m']].append(p['c'])
         return pack
 

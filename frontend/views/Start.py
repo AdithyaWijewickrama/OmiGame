@@ -1,8 +1,11 @@
+import sys
 import multiprocessing
 from tkinter import *
 
+from playsound import playsound
+
 import backend.complayer.Player
-from scripts.Helper import image
+from scripts.Helper import image, SOUNDPATH, abspath
 from frontend.views import OmmyMessage
 from frontend.views.OmmyMessage import MyMessage
 from frontend.ui import UiConfg
@@ -14,17 +17,16 @@ height = 520
 geo = str(width) + 'x' + str(height)
 started = False
 
-import sys
-
+WINDOW = None
 
 def ext():
     sys.exit()
 
 
 def playbackmusic():
-    # while True:
-    print("Playing music")
-        # playsound(sound=SOUNDPATH + 'ForestWalk.mp3')
+    while True:
+        print("Playing music")
+        playsound(sound=SOUNDPATH + '/ForestWalk.mp3')
 
 
 def clearwindow():
@@ -33,17 +35,17 @@ def clearwindow():
 
 class PlayGame:
     def __init__(self, parent, started=False):
-        global prosses
+        global musicProsses
         if started:
-            prosses = multiprocessing.Process(target=playbackmusic)
-            prosses.daemon = True
-            if int(playerdata.getvalue('music')) == 1:
-                prosses.start()
+            musicProsses = multiprocessing.Process(target=playbackmusic)
+            musicProsses.daemon = True
+            if int(playerdata.getValue('music')) == 1:
+                musicProsses.start()
         self.gui(parent)
 
     def gui(self, parent):
         if parent == 0:
-            self.win_dialog = OmmyMessage.MyMessage(0, size=geo, center='scree')
+            self.win_dialog = OmmyMessage.MyMessage(0, size=geo, center='screen')
             self.w = self.win_dialog.win
             global WINDOW
             WINDOW = self.w
@@ -64,7 +66,8 @@ class PlayGame:
                               bg='white', fg=COLOR)
         self.button1.pack(side=RIGHT)
         self.button2.pack(side=LEFT)
-        self.img = image("images/backgrounds/aces-2-gradiant.png", 650, 360)
+        print(abspath('frontend/static/images/backgrounds/aces-2-gradiant.png'))
+        self.img = image('backgrounds/aces-2-gradiant.png', 650, 360)
         self.imgLabel = Label(self.w, image=self.img, bg=COLOR)
         self.win_dialog.setcomponents([[self.label1], [self.imgLabel], [self.bottum]])
         self.bottum.grid(column=0, row=2, sticky='we', pady=10, padx=20)
@@ -105,13 +108,13 @@ class Settings:
                                  command=self.sound, anchor='w')
         self.ok_btn = Button(self.win, font=font, command=self.ok, text='ok', bg=COLOR2, fg='white', activebackground=COLOR,
                              activeforeground='white')
-        self.img = image("../static/images/backgrounds/domino.png", 380, 380)
-        x = int(playerdata.getvalue('music'))
+        self.img = image('backgrounds/domino.png', 380, 380)
+        x = int(playerdata.getValue('music'))
         if x == 1:
             self.music.select()
         elif x == 0:
             self.music.deselect()
-        x = int(playerdata.getvalue('sound'))
+        x = int(playerdata.getValue('sound'))
         if x == 1:
             self.sound.select()
         elif x == 0:
@@ -122,14 +125,14 @@ class Settings:
 
     def music(self):
         if checkmusic.get() == 1:
-            playerdata.update('music', '1')
-            global prosses
-            prosses = multiprocessing.Process(target=playbackmusic)
-            prosses.daemon = True
-            prosses.start()
+            playerdata.update('music', 1)
+            global musicProsses
+            musicProsses = multiprocessing.Process(target=playbackmusic)
+            musicProsses.daemon = True
+            musicProsses.start()
         else:
-            playerdata.update('music', '0')
-            globals()['t'].terminate()
+            playerdata.update('music', 0)
+            globals()['musicProsses'].terminate()
 
     def sound(self):
         print(checksound.get())
@@ -140,10 +143,6 @@ class Settings:
 
     def ok(self):
         self.dialog.hide()
-
-    def save(self):
-        clearwindow()
-        PlayGame(WINDOW)
 
 
 if __name__ == '__main__':

@@ -175,7 +175,7 @@ w = Tk()
 
 w.geometry("1000x600")
 w.config(bg='gray')
-cimage = image('../static/images/backgrounds/aces.jpg', 600, 600)
+cimage = image('backgrounds/aces.jpg', 600, 600)
 label = Label(w, image=cimage)
 label.pack(side=LEFT)
 frame = Frame(w, bg='black')
