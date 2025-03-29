@@ -1,8 +1,8 @@
 import random
 
-from backend import CardPack
-from backend.complayer import Player
-from backend.CardPack import Card
+from backend import card_pack
+from backend.complayer import omi_player
+from backend.card_pack import Card
 
 status = ''
 trumpPly = 3
@@ -10,10 +10,10 @@ pl1 = Player.Player('Player 1')
 pl2 = Player.Player('Player 2')
 pl3 = Player.Player('Player 3')
 realPlayer = Player.Player('Real Player')
-pl1.setopponent(pl2)
-pl2.setopponent(pl1)
-pl3.setopponent(realPlayer)
-realPlayer.setopponent(pl3)
+pl1.set_opponent(pl2)
+pl2.set_opponent(pl1)
+pl3.set_opponent(realPlayer)
+realPlayer.set_opponent(pl3)
 team1 = [pl1, pl2]
 team2 = [pl3, realPlayer]
 teams = {'team1': {'team': team1, 'score': 0}, 'team2': {'team': team2, 'score': 0}}
@@ -33,13 +33,13 @@ def lost():
 
 def suffle():
     print('card pack')
-    c = CPack.cardpack()
+    c = CPack.omi_card_pack()
     print(c)
-    for v in CPack.mainCards:
-        pl1.cards[v].clear()
-        pl2.cards[v].clear()
-        pl3.cards[v].clear()
-        realPlayer.cards[v].clear()
+    for v in CPack.SUITS:
+        pl1.card_pack[v].clear()
+        pl2.card_pack[v].clear()
+        pl3.card_pack[v].clear()
+        realPlayer.card_pack[v].clear()
 
     for v in range(4):
         for i in range(8):
@@ -53,29 +53,29 @@ def suffle():
             card = list(c[main])[random.randint(0, len(c[main]) - 1)]
             if v == 0:
                 if i == 4 and trumpPly == 0:
-                    print(pl1.cards)
-                    Player.trump = pl1.sayTrump()
-                pl1.cards[main].append(card)
+                    print(pl1.card_pack)
+                    Player.trump_suit = pl1.say_trump()
+                pl1.card_pack[main].append(card)
             elif v == 1:
                 if i == 4 and trumpPly == 1:
-                    print(pl3.cards)
-                    Player.trump = pl3.sayTrump()
-                pl2.cards[main].append(card)
+                    print(pl3.card_pack)
+                    Player.trump_suit = pl3.say_trump()
+                pl2.card_pack[main].append(card)
             elif v == 2:
                 if i == 4 and trumpPly == 2:
-                    print(pl2.cards)
-                    Player.trump = pl2.sayTrump()
-                pl3.cards[main].append(card)
+                    print(pl2.card_pack)
+                    Player.trump_suit = pl2.say_trump()
+                pl3.card_pack[main].append(card)
             elif v == 3:
                 if i == 4 and trumpPly == 3:
-                    print("You are to say trump\n" + str(realPlayer.cards))
+                    print("You are to say trump\n" + str(realPlayer.card_pack))
                     tc = ''
                     while tc == '':
                         tc = getCard(input())
-                    Player.trump = tc
-                realPlayer.cards[main].append(card)
+                    Player.trump_suit = tc
+                realPlayer.card_pack[main].append(card)
             c[main].remove(card)
-    addpack(realPlayer.cards)
+    addpack(realPlayer.card_pack)
 
 
 def addpack(hand):
@@ -106,11 +106,11 @@ def getcard(s):
 
 
 def showcardsofplayers():
-    print('Real Player =' + str(realPlayer.cards))
-    print('Player 1 =' + str(pl1.cards))
-    print('Player 2 =' + str(pl2.cards))
-    print('Player 3 =' + str(pl3.cards))
-    print('trump ' + Player.trump)
+    print('Real Player =' + str(realPlayer.card_pack))
+    print('Player 1 =' + str(pl1.card_pack))
+    print('Player 2 =' + str(pl2.card_pack))
+    print('Player 3 =' + str(pl3.card_pack))
+    print('trump ' + Player.trump_suit)
 
 
 def showstat():
@@ -156,13 +156,13 @@ while option != '2':
                 hand = {'main': ''}
                 for i in li:
                     if i == 0:
-                        hand[pl1.name] = pl1.getnext(hand)
+                        hand[pl1.name] = pl1.get_next(hand)
                         showhand()
                     elif i == 1:
-                        hand[pl3.name] = pl3.getnext(hand)
+                        hand[pl3.name] = pl3.get_next(hand)
                         showhand()
                     elif i == 2:
-                        hand[pl2.name] = pl2.getnext(hand)
+                        hand[pl2.name] = pl2.get_next(hand)
                         showhand()
                     elif i == 3:
                         while True:
@@ -172,7 +172,7 @@ while option != '2':
                             print(c)
                             if len(c) != 2:
                                 print('Invalid card\nValid cars are:\n\thearts-h\n\tdiamonds-d\n\tspades-s\n\tclubs-c')
-                                for v in CardPack.cards:
+                                for v in card_pack.RANKS:
                                     print('\t' + v)
                                 print('You want to continue [y/n]')
                                 if input() == 'n':
@@ -185,7 +185,7 @@ while option != '2':
                             print(c)
                         hand[realPlayer.name] = c
                         hand['main'] = c.card['m']
-                        realPlayer.cards[hand['main']].remove(c.card['c'])
+                        realPlayer.card_pack[hand['main']].remove(c.card['c'])
                         Player.prepl = realPlayer.name
                     Player.puthand(hand)
                     side = Player.getside(hand)

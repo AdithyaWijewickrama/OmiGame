@@ -6,7 +6,7 @@ from playsound import playsound
 
 
 def image(file, w=0, h=0, a=0):
-    img = Image.open(abspath('frontend/static/images/'+file))
+    img = Image.open(abs_path('frontend/static/images/' + file))
     if not (w == 0 or h == 0):
         img = img.resize((w, h), Image.Resampling.LANCZOS)
     return ImageTk.PhotoImage(img.rotate(a))
@@ -33,39 +33,39 @@ def center_relative(win, parent):
     x = int(((sw - w) / 2) + parent.winfo_x())
     y = int(((sh - h) / 2) + parent.winfo_y())
     win.geometry(f"{w}x{h}+{x}+{y}")
-    print(f"{w}x{h}+{x}+{y}")
 
 
-def abspath(file):
+def abs_path(file):
     return str((Path.cwd() / file).resolve())
 
 
-def putcard(i=1):
-    from backend.complayer.Player import PlayerData
-    if int(PlayerData().getValue('sound')) == 1:
+def put_card(i: int = 1):
+    from backend.complayer.omi_player import PlayerData
+    if int(PlayerData().get_value('sound')) == 1:
         for k in range(i):
             try:
                 print("Playing sound: Putting cards")
-                playsound(SOUNDPATH+'/putcard.mp3')
+                playsound(SOUND_PATH + '/putcard.mp3')
             except Exception as e:
-                print('[PLAYSONG EXP]', e)
+                print('[PLAY SONG EXP]', e)
+                raise e
     else:
         time.sleep(1)
 
 
-def suffleCards():
-    from backend.complayer.Player import PlayerData
-    if int(PlayerData().getValue('sound')) == 1:
-        playsound(SOUNDPATH+'/shuffling-cards-1.wav')
+def shuffle_cards():
+    from backend.complayer.omi_player import PlayerData
+    if int(PlayerData().get_value('sound')) == 1:
+        playsound(SOUND_PATH + '/shuffling-cards-1.wav')
     else:
         time.sleep(1)
 
 
-def giveCards():
-    from backend.complayer.Player import PlayerData
-    if int(PlayerData().getValue('sound')) == 1:
+def give_cards():
+    from backend.complayer.omi_player import PlayerData
+    if int(PlayerData().get_value('sound')) == 1:
         print("Playing sound: Giving cards")
-        playsound(SOUNDPATH+'/shuffling-cards-6.wav')
+        playsound(SOUND_PATH + '/shuffling-cards-6.wav')
     else:
         time.sleep(1)
 
@@ -75,15 +75,14 @@ def listinlist(l, lm):
         return 0 if l == lm else None
     elif len(lm) > len(l):
         for i in range(0, len(lm) - len(l) + 1):
-            print(lm[i:len(l) + i])
             if lm[i:len(l) + i] == l:
                 return i
 
 
-def removelistfromlist(ml, l):
-    for e in l:
-        ml.remove(e)
-    return ml
+def remove_sublist_from_list(main_list, sub_list=[]):
+    for e in sub_list:
+        main_list.remove(e)
+    return main_list
 
 
 def lcm(vals):
@@ -92,6 +91,5 @@ def lcm(vals):
     return r if (r1 % r) % 1 == 0 else r - (r1 % r)
 
 
-IMAGEPATH = abspath('frontend/static/images/')
-print(IMAGEPATH)
-SOUNDPATH = abspath('frontend/static/sounds/')
+IMAGE_PATH = abs_path('frontend/static/images/')
+SOUND_PATH = abs_path('frontend/static/sounds/')
