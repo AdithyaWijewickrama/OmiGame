@@ -36,12 +36,20 @@ def clear_window():
 
 class PlayGame:
     def __init__(self, parent, started=False):
-        global musicProsses
+        self.w = None
+        self.button2 = None
+        self.imgLabel = None
+        self.img = None
+        self.button1 = None
+        self.win_dialog = None
+        self.bottom = None
+        self.label1 = None
+        global music_proses
         if started:
-            musicProsses = multiprocessing.Process(target=play_background_music)
-            musicProsses.daemon = True
+            music_proses = multiprocessing.Process(target=play_background_music)
+            music_proses.daemon = True
             if int(player_data.get_value('music')) == 1:
-                musicProsses.start()
+                music_proses.start()
         self.gui(parent)
 
     def gui(self, parent):
@@ -51,27 +59,27 @@ class PlayGame:
             global WINDOW
             WINDOW = self.w
         else:
-            if type(parent) == omi_message.MyMessage:
+            if type(parent) is omi_message.MyMessage:
                 self.win_dialog = parent
                 self.w = parent.win
             else:
-                self.w = Frame(parent)
+                self.w = omi_message.MyMessage(0, size=geo, center='screen')
                 globals()['WINDOW'] = parent
         self.w.configure(bg=COLOR)
 
-        self.label1 = Label(self.w, text="Ommy", font=('Arial', 40, 'bold'), bg=COLOR, fg='white')
-        self.bottum = Frame(self.w, bg=COLOR)
-        self.button1 = Button(self.bottum, text="Play", command=self.play, font=('Arial', 20, 'bold'), bg='white',
+        self.label1 = Label(self.w, text="Play Omi", font=('Arial', 40, 'bold'), bg=COLOR, fg='white')
+        self.bottom = Frame(self.w, bg=COLOR)
+        self.button1 = Button(self.bottom, text="Play", command=self.play, font=('Arial', 20, 'bold'), bg='white',
                               fg=COLOR)
-        self.button2 = Button(self.bottum, text="Settings", command=self.goto_settings, font=('Arial', 20, 'bold'),
+        self.button2 = Button(self.bottom, text="Settings", command=self.goto_settings, font=('Arial', 20, 'bold'),
                               bg='white', fg=COLOR)
         self.button1.pack(side=RIGHT)
         self.button2.pack(side=LEFT)
         print(abs_path('frontend/static/images/backgrounds/aces_gradiant_no_background.png'))
         self.img = image('backgrounds/aces_gradiant_no_background.png', 650, 360)
         self.imgLabel = Label(self.w, image=self.img, bg=COLOR)
-        self.win_dialog.set_components([[self.label1], [self.imgLabel], [self.bottum]])
-        self.bottum.grid(column=0, row=2, sticky='we', pady=10, padx=20)
+        self.win_dialog.set_components([[self.label1], [self.imgLabel], [self.bottom]])
+        self.bottom.grid(column=0, row=2, sticky='we', pady=10, padx=20)
 
     def play(self):
         clear_window()
@@ -86,13 +94,13 @@ class PlayGame:
 def music():
     if check_music.get() == 1:
         player_data.update('music', 1)
-        global musicProsses
-        musicProsses = multiprocessing.Process(target=play_background_music)
-        musicProsses.daemon = True
-        musicProsses.start()
+        global music_proses
+        music_proses = multiprocessing.Process(target=play_background_music)
+        music_proses.daemon = True
+        music_proses.start()
     else:
         player_data.update('music', 0)
-        globals()['musicProsses'].terminate()
+        globals()['music_proses'].terminate()
 
 
 def sound():

@@ -3,6 +3,7 @@ from functools import reduce
 from tkinter import *
 from tkinter import Label, Frame, CENTER, Button, messagebox as mbox, messagebox
 
+from backend import card_pack
 from frontend.ui.ui_config import FONT, COLOR
 from scripts import helper
 from scripts.helper import image
@@ -100,6 +101,8 @@ class MyMessage:
         :param parent:parent window
         :param options: dict:{}
         """
+        self.comps = None
+        self.max_cols = None
         self.ops = options
         global img
         self.bg = self.get_opt('bg') if self.get_opt('bg') else 'white'
@@ -118,9 +121,9 @@ class MyMessage:
                 self.win.bind('<FocusOut>', self.focus)
             if self.get_opt('center') == 'relative':
                 helper.center_relative(self.win, self.parent)
-        if self.get_opt('resizable') == False:
+        if not self.get_opt('resizable'):
             self.win.resizable(False, False)
-        if self.get_opt('titlebar') == False:
+        if not self.get_opt('titlebar'):
             self.win.overrideredirect(True)
         elif type(self.get_opt('titlebar')) == str:
             self.win.title(self.get_opt('titlebar'))
@@ -133,8 +136,8 @@ class MyMessage:
 
     def set_components(self, comps):
         """
-        add the components to the window
-        :param comps: two dimensional list of widgets
+        Adds the components to the window
+        :param comps: two-dimensional list of widgets
         [row1:[],row2:[]...]
         :return:
         """
@@ -145,7 +148,7 @@ class MyMessage:
             self.win.rowconfigure(i, weight=1)
         self.max_cols = 1
         for row in self.comps:
-            if type(row) == list:
+            if type(row) is list:
                 self.max_cols = len(reduce(lambda x, y: x if len(x) > len(y) else y, self.comps))
                 break
         lcm = 1
@@ -156,13 +159,15 @@ class MyMessage:
         rw = 0
         cl = 0
         for row in self.comps:
-            if type(row) == list:
+            if type(row) is list:
                 col_span = int(lcm / len(row))
                 for c in row:
                     try:
-                        c.grid(column=cl, row=rw, columnspan=col_span)
+                        if c.winfo_exists() and c.winfo_toplevel() == self.win:
+                            c.grid(column=cl, row=rw, columnspan=col_span)
+                        else:
+                            print(f"Warning: Component {c} does not exist or is not part of {self.win}.")
                     except Exception as e:
-                        print(e, ' \ncomponent:', c)
                         raise e
                     cl += col_span
             else:
@@ -222,14 +227,15 @@ class ShowSelectedTrump:
 
 
 class StatLabel(Frame):
-    def __init__(self, parent, dimention=(300, 25), float='-', value='', type='', image='', bg='white', fg='black',
-                 valuefont=FONT, typefont=('Arial', 10, 'bold')):
-        super().__init__(parent, height=dimention[1], bg=bg, bd=0)
-        self.float = float
+    def __init__(self, parent, dimension: tuple = (300, 25), floating: str = '-', value: str = '', label_type: str = '',
+                 image: Image = '', bg: str = 'white', fg: str = 'black',
+                 value_font=FONT, type_font=('Arial', 10, 'bold')):
+        super().__init__(parent, height=dimension[1], bg=bg, bd=0)
+        self.floating = floating
         self.imageLabel = Label(self, image=image, anchor='w', bg=bg)
-        self.typeLabel = Label(self, text=type, anchor='w', font=typefont, bg=bg, fg=fg)
-        self.valueLabel = Label(self, text=value, anchor='w', font=valuefont, bg=bg, fg=fg)
-        if float == '-':
+        self.typeLabel = Label(self, text=label_type, anchor='w', font=type_font, bg=bg, fg=fg)
+        self.valueLabel = Label(self, text=value, anchor='w', font=value_font, bg=bg, fg=fg)
+        if floating == '-':
             r = 0
             if image != '':
                 self.columnconfigure(r, weight=1)
@@ -241,7 +247,7 @@ class StatLabel(Frame):
             self.columnconfigure(r, weight=1)
             self.valueLabel.grid(column=r, row=0, sticky='ew')
             self.rowconfigure(0, weight=1)
-        if float == '|':
+        if floating == '|':
             r = 0
             if image != '':
                 self.imageLabel.grid(column=0, row=0, sticky='ew')
@@ -268,23 +274,19 @@ class StatPanel:
     def __init__(self, parent):
         self.gui(parent)
 
-    def gui(self, parent, teamname=0, playername="Player", wontimes=0, trumptimes=0):
+    def gui(self, parent, playername="Player", wontimes=0, trumptimes=0):
         if parent == 0:
             return
-        else:
-            self.labelwidth = 100
-            self.w = Frame(parent, highlightbackground=COLOR, highlightthickness=2, bg='white')
-        self.teamname = StatLabel(self.w, value=str(teamname), type='Team No:')
-        self.teamname.pack(anchor=CENTER, padx=5)
-        self.playername = StatLabel(self.w, value=str(playername), type='Player name')
+        self.w = Frame(parent, highlightbackground=COLOR, bg='white')
+        self.playername = StatLabel(self.w, value=str(playername), label_type='Player name')
         self.playername.pack(anchor=CENTER, padx=5)
-        self.wontimes = StatLabel(self.w, value=str(wontimes), type='Won hands')
+        self.wontimes = StatLabel(self.w, value=str(wontimes), label_type='Won hands')
         self.wontimes.pack(anchor=CENTER, padx=5)
-        self.trumptimes = StatLabel(self.w, value=str(trumptimes), type='No. of trumps')
+        self.trumptimes = StatLabel(self.w, value=str(trumptimes), label_type='No. of trumps')
         self.trumptimes.pack(anchor=CENTER, padx=5)
+        self.update(playername, wontimes, trumptimes)
 
-    def update(self, teamname=0, playername="Player", wontimes=0, trumptimes=0):
-        self.teamname.setval(teamname)
+    def update(self, playername="Player", wontimes=0, trumptimes=0):
         self.playername.setval(playername)
         self.wontimes.setval(wontimes)
         self.trumptimes.setval(trumptimes)
@@ -316,12 +318,12 @@ class AskTrump:
         self.suit_cards = []
         for mc in self.suit_set:
             self.suit_cards.append(get_suit_image(mc, int(card_width / 2), int(card_width / 2)))
-        for m0, m1 in zip(self.suit_set, self.suit_cards):
-            image_button = Button(self.dlg.win, image=m1, command=(lambda mc0=m0: self.choose(mc0)))
+        for suit, suit_img in zip(self.suit_set, self.suit_cards):
+            image_button = Button(self.dlg.win, image=suit_img, command=(lambda _suit=suit: self.choose(_suit)))
             self.suit_buttons.append(image_button)
 
         self.dlg.set_components(
-            [[self.card_labels[0], self.card_labels[1], self.card_labels[2], self.card_labels[3]], self.suit_buttons])
+            [self.card_labels, self.suit_buttons])
 
     def closing(self):
         a = mbox.askyesnocancel('Warning', 'Are you want to quit the game\nPress No to quit to main menu')
@@ -350,6 +352,7 @@ class AskTrump:
 class Hints:
 
     def __init__(self, parent, left_cards, player, hand):
+        self.left_cards_dlg = None
         self.cards1 = None
         self.cards2 = None
         self.card = None
@@ -358,19 +361,25 @@ class Hints:
         self.player = player
         self.hand = hand
         self.parent = parent
-        self.dlg = MyMessage(parent, size=f'{int(card_width * 4)}x{int((card_height * 2) + (card_width / 2))}',
-                             dialogtype='modal', titlebar='You are to say trump',
+        self.dlg = MyMessage(parent, size=f'{int(card_width * 3)}x{int(card_height * 2)}',
+                             dialogtype='modal', titlebar='Hints',
                              center='relative', resizable=False)
 
         self.b1 = Button(self.dlg.win, text='Next card', command=self.next_card)
-        self.b2 = Button(self.dlg.win, text='Left cards', command=self.left_cards)
+        self.b2 = Button(self.dlg.win, text='Left cards', command=self.show_left_cards)
         self.cancel = Button(self.dlg.win, text='Cancel', command=self.dlg.hide)
-
         self.dlg.set_components([[self.b1], [self.b2], [self.cancel]])
 
-    def left_cards(self):
+    def show_left_cards(self):
         from backend.complayer.omi_player import PlayerData
+        from backend.card_pack import Card
         coins = int(PlayerData().get_value('coins'))
+        self.left_cards_dlg = MyMessage(self.parent, size=f'{int(card_width * 3)}x{int((card_height * 2 + 20))}',
+                                        dialogtype='modal', titlebar='Left cards',
+                                        center='relative', resizable=True)
+        left_card_imgs = []
+        left_card_img_index = 0
+        print(coins)
         if coins >= 150:
             global cards
             self.cards1 = []
@@ -379,13 +388,17 @@ class Hints:
                 self.cards1 = []
                 if len(self.left_cards[m]) > 0:
                     for c1 in c:
-                        self.cards1.append(Label(self.dlg.win, image=Card(m, c1).get_image_for_card()))
+                        left_card_imgs.append(Card(m, c1).get_image_for_card(card_pack.width / 3, card_pack.height / 3))
+                        self.cards1.append(
+                            Label(self.left_cards_dlg.win, image=left_card_imgs[left_card_img_index]))
+                        left_card_img_index += 1
                     self.cards2.append(self.cards1)
-            self.ok = Button(self.dlg.win, text='Ok', command=self.dlg.hide)
-            self.dlg.remove_components()
-            self.cards2.append(self.ok)
-            self.dlg.set_components(self.cards2)
+            self.ok = Button(self.left_cards_dlg.win, text='Ok', command=self.left_cards_dlg.hide)
+            self.cards2.append([self.ok])
+            self.left_cards_dlg.set_components(self.cards2)
             PlayerData().update('coins', coins - 150)
+            print("Showing left cards")
+            self.left_cards_dlg.show()
         else:
             messagebox.showerror('Error', 'You have no enough coins')
 
@@ -415,19 +428,20 @@ class YouWin:
                              dialogtype='modal', titlebar=False,
                              center='relative', resizable=False)
         self.bar = MyMenu(self.dlg.win)
-        self.dlg.win.configure(bg=COLOR)
+        self.dlg.win.configure(bg='white')
         f1 = 50
         f2 = 14
         img_r = 30
         self.img = image('icons/coin.png', img_r, img_r)
         self.img1 = image('icons/xp.png', img_r, img_r)
         self.win_label = Label(self.dlg.win, text="YOU WIN", font=('Arial', f1, 'bold'), bg=COLOR, fg='white')
-        self.coins = StatLabel(self.dlg.win, float='-', value=self.player_data.get_value('coins'), type='Coins gained',
-                               image=self.img, typefont=('Arial', f2, 'bold'),
-                               valuefont=('Arial', f2, 'bold'), bg=COLOR, fg='white')
-        self.xp = StatLabel(self.dlg.win, float='-', value=self.player_data.get_value('xp'), type='XP gained',
-                            image=self.img1, typefont=('Arial', f2, 'bold'),
-                            valuefont=('Arial', f2, 'bold'), bg=COLOR, fg='white')
+        self.coins = StatLabel(self.dlg.win, floating='-', value=self.player_data.get_value('coins'),
+                               label_type='Coins gained',
+                               image=self.img, type_font=('Arial', f2, 'bold'),
+                               value_font=('Arial', f2, 'bold'), bg=COLOR, fg='white')
+        self.xp = StatLabel(self.dlg.win, floating='-', value=self.player_data.get_value('xp'), label_type='XP gained',
+                            image=self.img1, type_font=('Arial', f2, 'bold'),
+                            value_font=('Arial', f2, 'bold'), bg=COLOR, fg='white')
         self.menu = Button(self.dlg.win, text='Main menu', bg='white', fg=COLOR, font=('Arial', f2, 'bold'),
                            command=self.main_menu)
         self.play_again = Button(self.dlg.win, text='Play again', bg='white', fg=COLOR, font=('Arial', f2, 'bold'),
@@ -478,19 +492,20 @@ class YouLose:
                              dialogtype='modal', titlebar=False,
                              center='relative', resizable=False)
         self.bar = MyMenu(self.dlg.win)
-        self.dlg.win.configure(bg=COLOR)
+        self.dlg.win.configure(bg='red')
         f1 = 50
         f2 = 14
         img_r = 30
         self.img = image('icons/coin.png', img_r, img_r)
         self.img1 = image('icons/xp.png', img_r, img_r)
         self.win_label = Label(self.dlg.win, text="YOU LOSE", font=('Arial', f1, 'bold'), bg=COLOR, fg='white')
-        self.coins = StatLabel(self.dlg.win, float='-', value=self.player_data.get_value('coins'), type='Coins lost',
-                               image=self.img, typefont=('Arial', f2, 'bold'),
-                               valuefont=('Arial', f2, 'bold'), bg=COLOR, fg='white')
-        self.xp = StatLabel(self.dlg.win, float='-', value=self.player_data.get_value('xp'), type='XP lost',
-                            image=self.img1, typefont=('Arial', f2, 'bold'),
-                            valuefont=('Arial', f2, 'bold'), bg=COLOR, fg='white')
+        self.coins = StatLabel(self.dlg.win, floating='-', value=self.player_data.get_value('coins'),
+                               label_type='Coins lost',
+                               image=self.img, type_font=('Arial', f2, 'bold'),
+                               value_font=('Arial', f2, 'bold'), bg=COLOR, fg='white')
+        self.xp = StatLabel(self.dlg.win, floating='-', value=self.player_data.get_value('xp'), label_type='XP lost',
+                            image=self.img1, type_font=('Arial', f2, 'bold'),
+                            value_font=('Arial', f2, 'bold'), bg=COLOR, fg='white')
         self.menu = Button(self.dlg.win, text='Main menu', bg='white', fg=COLOR, font=('Arial', f2, 'bold'),
                            command=self.main_menu)
         self.playa_gain = Button(self.dlg.win, text='Retry', bg='white', fg=COLOR, font=('Arial', f2, 'bold'),

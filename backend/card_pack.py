@@ -1,5 +1,4 @@
 import os.path
-from enum import Enum
 from functools import reduce
 from typing import Dict, Any, List
 
@@ -206,7 +205,7 @@ class Card:
             print(f'Card not valid {self.__str__()}')
             raise SyntaxError(f'Card not valid {self.__str__()}')
 
-    def get_image_for_card(self) -> Any:
+    def get_image_for_card(self, width_: int = width, height_: int = height) -> Any:
         """
         Get the image of the corresponding card.
         If the card is 7 of hearts this method will look for 7_of_hearts.png in images directory.
@@ -214,7 +213,7 @@ class Card:
         """
         try:
             filename = str((self.card['rank']) + '_of_' + (self.card['suit']) + '.png')
-            return image(os.path.join('cards', filename), width, height)
+            return image(os.path.join('cards', filename), int(width_), int(height_))
         except Exception as e:
             print(e)
             raise IOError(f"Corresponding png for card {self.__str__()} does not exist")
@@ -255,14 +254,11 @@ class Card:
         return 'Suit : ' + str(self.card['suit']) + '\tRank : ' + str(self.card['rank'])
 
 
-class OmiPlayer(Enum):
-    PLAYER_RIGHT = 0
-    PLAYER_OPPONENT = 1
-    PLAYER_LEFT = 2
-    PLAYER_YOU = 3
 
 
 class Hand:
+    from backend.complayer.omi_player import Player
+
     def __init__(self, trump: str = None, main_suit: str = None):
         """
         Initialize the hand with trump suit and lead suit.
@@ -274,7 +270,7 @@ class Hand:
         self.total_cards = 0
         self.hand = {}
 
-    def set_hand(self, hand: Dict[OmiPlayer, Card]):
+    def set_hand(self, hand: Dict[Player, Card]):
         """
         Set the hand to a new set of cards.
         :param hand: A dictionary of players and their respective cards.
@@ -288,7 +284,7 @@ class Hand:
         """
         self.lead_suit = main_suit
 
-    def set_player_card(self, player: OmiPlayer, card: Card):
+    def set_player_card(self, player: Player, card: Card):
         """
         Set the card for a specific player in the hand.
         :param player: The player (OmiPlayers enum).
@@ -297,7 +293,7 @@ class Hand:
         self.hand[player] = card
         self.total_cards += 1
 
-    def get_hand(self) -> Dict[OmiPlayer, Card]:
+    def get_hand(self) -> Dict[Player, Card]:
         """
         Get the hand of cards.
         :return: A dictionary of players and their respective cards.
@@ -338,7 +334,7 @@ class Hand:
             big_card = Card(self.lead_suit, get_biggest_rank(pack[self.lead_suit]))
         return big_card
 
-    def who_got(self) -> OmiPlayer:
+    def who_got(self) -> Player:
         """
         Determine who has the biggest card in the hand.
         :return: The player who has the biggest card, or -1 if not determined.
