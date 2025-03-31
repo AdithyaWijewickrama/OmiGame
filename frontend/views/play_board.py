@@ -87,7 +87,7 @@ class PlayDesk:
         self.hint.grid(column=0, row=0, sticky='we')
         self.settings.grid(column=0, row=1, sticky='we')
         self.coins.grid(column=0, row=2, sticky='we')
-        self.xp.grid(column=0, row=2, sticky='we')
+        self.xp.grid(column=0, row=3, sticky='we')
         self.sidebar.columnconfigure(0, weight=1)
         self.top_bar.grid(column=0, row=0, sticky='enw')
         row = 1
@@ -185,6 +185,9 @@ class PlayDesk:
         self.start()
 
     def show_settings(self):
+        threading.Thread(target=self.goto_settings).start()
+
+    def goto_settings(self):
         Settings(self.window)
 
     def hints(self):
