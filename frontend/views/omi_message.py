@@ -2,7 +2,6 @@ import time
 from functools import reduce
 from tkinter import *
 from tkinter import Label, Frame, CENTER, Button, messagebox as mbox, messagebox
-
 from backend import card_pack
 from frontend.ui.ui_config import FONT, COLOR
 from scripts import helper
@@ -331,10 +330,12 @@ class AskTrump:
             if a:
                 exit()
             else:
-                self.dlg.hide()
+                self.dlg.win.destroy()
                 self.parent.destroy()
-                from frontend.views import start
-                start.PlayGame(0)
+                from frontend.views.start import turn_off_music
+                turn_off_music()
+                import run
+                run.main()
         else:
             self.dlg.win.attributes('-topmost', True)
             self.dlg.win.attributes('-topmost', False)

@@ -44,12 +44,12 @@ class PlayGame:
         self.win_dialog = None
         self.bottom = None
         self.label1 = None
-        global music_proses
+        global music_process
         if started:
-            music_proses = multiprocessing.Process(target=play_background_music)
-            music_proses.daemon = True
+            music_process = multiprocessing.Process(target=play_background_music)
+            music_process.daemon = True
             if int(player_data.get_value('music')) == 1:
-                music_proses.start()
+                music_process.start()
         self.gui(parent)
 
     def gui(self, parent):
@@ -94,13 +94,16 @@ class PlayGame:
 def music():
     if check_music.get() == 1:
         player_data.update('music', 1)
-        global music_proses
-        music_proses = multiprocessing.Process(target=play_background_music)
-        music_proses.daemon = True
-        music_proses.start()
+        global music_process
+        music_process = multiprocessing.Process(target=play_background_music)
+        music_process.daemon = True
+        music_process.start()
     else:
         player_data.update('music', 0)
-        globals()['music_proses'].terminate()
+        turn_off_music()
+
+def turn_off_music():
+    globals()['music_process'].terminate()
 
 
 def sound():
