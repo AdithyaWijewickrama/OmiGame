@@ -2,7 +2,7 @@ import multiprocessing
 import sys
 from tkinter import *
 
-from playsound import playsound
+from playsound3 import playsound
 
 from backend.complayer.omi_player import PlayerData
 from frontend.ui import ui_config

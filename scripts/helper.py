@@ -1,8 +1,9 @@
+import sys
 import time
 from functools import reduce
 from pathlib import Path
 from PIL import ImageTk, Image
-from playsound import playsound
+from playsound3 import playsound
 
 
 def image(file, w=0, h=0, a=0):
@@ -36,7 +37,12 @@ def center_relative(win, parent):
 
 
 def abs_path(file):
-    return str((Path.cwd() / file).resolve())
+    """ Get absolute path of file """
+    try:
+        abs_pth = Path(sys._MEIPASS)
+    except AttributeError:
+        abs_pth = Path.cwd()
+    return str((abs_pth / file).resolve())
 
 
 def put_card(i: int = 1):

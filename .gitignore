@@ -13,3 +13,4 @@ venv/
 
 # Ignore .DS_Store (macOS)
 .DS_Store
+/build/
